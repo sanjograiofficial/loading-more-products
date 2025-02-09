@@ -12,14 +12,18 @@ const LoadMore = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `https://dummyjson.com/products?limit=20&skip=${
-          count === 0 ? 0 : count * 20
-        }`
+        `https://dummyjson.com/products?limit=20&skip=${count * 20}`
       );
       const result = await response.json();
 
       if (result && result.products && result.products.length) {
-        setProducts((prevData) => [...prevData, ...result.products]);
+        setProducts((prevData) => {
+          const newProducts = result.products.filter(
+            (newProduct) =>
+              !prevData.some((prevProduct) => prevProduct.id === newProduct.id)
+          );
+          return [...prevData, ...newProducts];
+        });
         setLoading(false);
       }
     } catch (e) {
